@@ -50,11 +50,11 @@ class AssessmentFeedback(models.Model):
     as well as zero or more feedback options
     ("Please select the statements below that reflect what you think of this peer grading experience")
     """
-    MAXSIZE = 1024 * 100     # 100KB
+    MAXSIZE = 1024 * 200     # 100KB
 
     submission_uuid = models.CharField(max_length=128, unique=True, db_index=True)
     assessments = models.ManyToManyField(Assessment, related_name='assessment_feedback', default=None)
-    feedback_text = models.TextField(max_length=10000, default="")
+    feedback_text = models.TextField(max_length=20000, default="")
     options = models.ManyToManyField(AssessmentFeedbackOption, related_name='assessment_feedback', default=None)
 
     class Meta:

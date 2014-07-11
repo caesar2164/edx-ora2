@@ -160,6 +160,8 @@ class PeerAssessmentMixin(object):
 
         if self.rubric_feedback_prompt is not None:
             context_dict["rubric_feedback_prompt"] = self.rubric_feedback_prompt
+            if self.rubric_track_changes is not None:
+                context_dict["rubric_track_changes"] = self.rubric_track_changes
 
         # We display the due date whether the problem is open or closed.
         # If no date is set, it defaults to the distant future, in which

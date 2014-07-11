@@ -135,6 +135,12 @@ class OpenAssessmentBlock(
         scope=Scope.content,
         help="The rubric feedback prompt displayed to the student"
     )
+    
+    rubric_track_changes = String(
+        default="",
+        scope=Scope.content,
+        help="URL to track changes library, currently ICE"
+    )
 
     rubric_assessments = List(
         default=DEFAULT_ASSESSMENT_MODULES,
@@ -242,6 +248,8 @@ class OpenAssessmentBlock(
         frag = Fragment(template.render(context))
         frag.add_css(load("static/css/openassessment.css"))
         frag.add_javascript(load("static/js/openassessment.min.js"))
+        if self.rubric_track_changes:
+            frag.add_javascript_url(self.rubric_track_changes) # I want this to come from the course advanced setting
         frag.initialize_js('OpenAssessmentBlock')
         return frag
 
@@ -313,6 +321,10 @@ class OpenAssessmentBlock(
 
         """
         return [
+            (
+                "OpenAssessmentBlock Track Changes",
+                load('static/xml/track_changes.xml')
+            ),
             (
                 "OpenAssessmentBlock Unicode",
                 load('static/xml/unicode.xml')

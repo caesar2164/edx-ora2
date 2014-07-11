@@ -1,11 +1,15 @@
 """
 Serialize and deserialize OpenAssessment XBlock content to/from XML.
 """
+import logging
 import lxml.etree as etree
 import pytz
 import dateutil.parser
 import defusedxml.ElementTree as safe_etree
 from django.utils.translation import ugettext as _
+
+
+logger = logging.getLogger(__name__)
 
 
 class UpdateFromXmlError(Exception):
@@ -155,6 +159,7 @@ def _serialize_rubric(rubric_root, oa_block):
     if oa_block.rubric_feedback_prompt is not None:
         feedback_prompt = etree.SubElement(rubric_root, 'feedbackprompt')
         feedback_prompt.text = unicode(oa_block.rubric_feedback_prompt)
+        feedback_prompt.set('track_changes', oa_block.rubric_track_changes)
 
 
 def _parse_date(date_str):
@@ -316,19 +321,19 @@ def _parse_rubric_xml(rubric_root):
         InvalidRubricError: The rubric was not semantically valid.
     """
     rubric_dict = dict()
+    rubric_dict['prompt'] = None
+    rubric_dict['feedbackprompt'] = None
+    rubric_dict['trackchanges'] = False
 
     # Rubric prompt
     prompt_el = rubric_root.find('prompt')
     if prompt_el is not None:
         rubric_dict['prompt'] = _safe_get_text(prompt_el)
-    else:
-        rubric_dict['prompt'] = None
-
+    
     feedback_prompt_el = rubric_root.find('feedbackprompt')
     if feedback_prompt_el is not None:
         rubric_dict['feedbackprompt'] = _safe_get_text(feedback_prompt_el)
-    else:
-        rubric_dict['feedbackprompt'] = None
+        rubric_dict['trackchanges'] = feedback_prompt_el.get('track_changes', False)
 
     # Criteria
     rubric_dict['criteria'] = _parse_criteria_xml(rubric_root)
@@ -663,6 +668,7 @@ def update_from_xml(oa_block, root, validator=DEFAULT_VALIDATOR):
     oa_block.rubric_criteria = rubric['criteria']
     oa_block.rubric_assessments = assessments
     oa_block.rubric_feedback_prompt = rubric['feedbackprompt']
+    oa_block.rubric_track_changes = rubric['trackchanges']
     oa_block.submission_start = submission_start
     oa_block.submission_due = submission_due
     oa_block.allow_file_upload = allow_file_upload

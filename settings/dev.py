@@ -8,6 +8,7 @@ INSTALLED_APPS += (
     'django_pdb',            # Allows post-mortem debugging on exceptions
     'debug_toolbar',
     'debug_panel',
+    'trackchanges', # Stanford's in-development collaborative editing branch
 )
 
 MIDDLEWARE_CLASSES += (

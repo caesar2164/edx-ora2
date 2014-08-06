@@ -3,6 +3,8 @@ from django.conf.urls import include, patterns, url
 from django.views.i18n import javascript_catalog
 from django.contrib import admin
 
+from trackchanges.views import get_change_tracker_for_assessment
+
 import openassessment.assessment.urls
 import workbench.urls
 
@@ -26,6 +28,9 @@ urlpatterns = patterns(
 
     # JavaScript i18n
     (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', JS_INFO_DICT),
+    
+    # Track Changes
+    url(r'^trackchanges/([_a-zA-Z0-9-]+)$', 'trackchanges.views.get_change_tracker_for_assessment', name="assessmentworkflow_uuid"),
 )
 
 # We need to do explicit setup of the Django debug toolbar because autodiscovery
